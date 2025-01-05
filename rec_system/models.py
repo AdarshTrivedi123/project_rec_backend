@@ -1,3 +1,18 @@
 from django.db import models
+from django.contrib.auth.models import User
 
-# Create your models here.
+class UserProfileData(models.Model):
+    
+    user = models.ForeignKey(User, to_field='username', on_delete=models.CASCADE)
+
+    interest_field = models.CharField(max_length=100)  
+    interest_domain = models.CharField(max_length=100)
+    programming_language = models.CharField(max_length=100)
+    frameworks = models.CharField(max_length=100)
+    cloud_and_database = models.CharField(max_length=100)
+    projects = models.TextField()
+    achievements_and_awards = models.TextField()
+
+    def __str__(self):
+        return f"{self.user.username} - Profile Data"
+
