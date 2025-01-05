@@ -5,6 +5,8 @@ class UserProfileData(models.Model):
     
     user = models.ForeignKey(User, to_field='username', on_delete=models.CASCADE)
 
+    branch=models.CharField(null=True)
+    academic_year=models.CharField(null=True)
     interest_field = models.CharField(max_length=100)  
     interest_domain = models.CharField(max_length=100)
     programming_language = models.CharField(max_length=100)
