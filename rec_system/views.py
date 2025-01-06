@@ -15,11 +15,15 @@ class RegisterAPIView(APIView):
             user = serializer.save()
             token, _ = Token.objects.get_or_create(user=user)
             response_data = {
-                "Token": token.key,
-                "user_details": {
-                    "first_name": user.first_name,
-                    "last_name": user.last_name,
-                    "username": user.username,
+                "success": True,
+                "message": "Logged In Successfully",
+                "data": {
+                    "Token": token.key,
+                    "user_details": {
+                        "first_name": user.first_name,
+                        "last_name": user.last_name,
+                        "username": user.username,
+                    }
                 }
             }
             return Response(response_data, status=status.HTTP_201_CREATED)
