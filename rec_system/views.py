@@ -54,6 +54,7 @@ class LoginAPIView(APIView):
                     "message": "User logged-in successfully.",
                     "data": {
                         "Token": token.key,
+                        "Username":username,
                     },
                 }, status=status.HTTP_201_CREATED)
         
