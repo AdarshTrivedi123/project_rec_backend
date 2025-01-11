@@ -7,6 +7,7 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from .serializers import RegisterSerializer, UserProfileDataSerializer
+from .models import UserProfileData
 
 # Create your views here.
 class RegisterAPIView(APIView):
@@ -55,6 +56,8 @@ class LoginAPIView(APIView):
                     "data": {
                         "Token": token.key,
                         "Username":username,
+                        "First Name": user.first_name,
+                        "Last Name": user.last_name,
                     },
                 }, status=status.HTTP_201_CREATED)
         
@@ -76,3 +79,65 @@ class UserProfileDataView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, username):
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({
+                "success": False,
+                "message": "User not found",
+                "data": None
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            user_profile = UserProfileData.objects.get(user=user)
+        except UserProfileData.DoesNotExist:
+            return Response({
+                "success": False,
+                "message": "User profile not found",
+                "data": None
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserProfileDataSerializer(user_profile)
+        return Response({
+            "success": True,
+            "message": "User data retrieved successfully.",
+            "data": serializer.data
+        }, status=status.HTTP_200_OK)
+
+
+    def patch(self, request, username):
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({
+                "success": False,
+                "message": "User not found",
+                "data": None
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+        
+            user_profile = UserProfileData.objects.get(user=user)
+        except UserProfileData.DoesNotExist:
+            return Response({
+                "success": False,
+                "message": "User profile not found.",
+                "data": None
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserProfileDataSerializer(user_profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "success": True,
+                "message": "User profile updated successfully.",
+                "data": serializer.data
+            }, status=status.HTTP_200_OK)
+        
+        return Response({
+            "success": False,
+            "message": "Error updating user profile.",
+            "data": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
