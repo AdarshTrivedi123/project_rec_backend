@@ -24,7 +24,7 @@ class RegisterAPIView(APIView):
                         "Token": token.key,
                         "first_name": user.first_name,
                         "last_name": user.last_name,
-                        "username": user.username,
+                        "Username": user.username,
                         "email": user.email,
                     },
                 }, status=status.HTTP_201_CREATED)
@@ -56,8 +56,8 @@ class LoginAPIView(APIView):
                     "data": {
                         "Token": token.key,
                         "Username":username,
-                        "First Name": user.first_name,
-                        "Last Name": user.last_name,
+                        "first_name": user.first_name,
+                        "last_name": user.last_name,
                     },
                 }, status=status.HTTP_201_CREATED)
         
