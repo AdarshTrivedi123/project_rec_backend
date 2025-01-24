@@ -97,7 +97,7 @@ class UserProfileDataView(APIView):
                 "success": False,
                 "message": "User profile not found",
                 "data": None
-            }, status=status.HTTP_404_NOT_FOUND)
+            }, status=status.HTTP_200_OK)
 
         serializer = UserProfileDataSerializer(user_profile)
         return Response({
