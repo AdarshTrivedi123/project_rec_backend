@@ -22,7 +22,7 @@ class Bookmark(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     description = models.TextField()
-    skills = models.CharField(max_length=255)  
+    skills = models.TextField()
     index = models.IntegerField()
 
     def __str__(self):
