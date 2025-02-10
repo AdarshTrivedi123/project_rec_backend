@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import UserProfileData
+from .models import UserProfileData, Bookmark
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -34,3 +34,8 @@ class UserProfileDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfileData
         fields = '__all__'
+
+class BookmarkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bookmark
+        fields = ['title', 'description', 'skills', 'index']

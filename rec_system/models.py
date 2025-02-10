@@ -18,3 +18,12 @@ class UserProfileData(models.Model):
     def __str__(self):
         return f"{self.user.username} - Profile Data"
 
+class Bookmark(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    skills = models.CharField(max_length=255)  
+    index = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.user.username} - {self.title}"

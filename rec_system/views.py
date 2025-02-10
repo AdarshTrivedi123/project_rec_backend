@@ -6,8 +6,8 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from .serializers import RegisterSerializer, UserProfileDataSerializer
-from .models import UserProfileData
+from .serializers import RegisterSerializer, UserProfileDataSerializer,BookmarkSerializer
+from .models import UserProfileData, Bookmark
 
 # Create your views here.
 class RegisterAPIView(APIView):
@@ -145,3 +145,69 @@ class UserProfileDataView(APIView):
             "message": "Error updating user profile.",
             "data": serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class BookmarkAPIView(APIView):
+
+    def get(self, request):
+        username = request.query_params.get('username')
+        if not username:
+            return Response({"success": False, "message": "Username is required."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({"success": False, "message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        bookmarks = Bookmark.objects.filter(user=user)
+        serialized_bookmarks = BookmarkSerializer(bookmarks, many=True)
+
+        return Response({
+            "success": True,
+            "message": "Bookmarks retrieved successfully.",
+            "data": serialized_bookmarks.data
+        }, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        username = request.data.get('username')
+        title = request.data.get('title')
+        description = request.data.get('description')
+        skills = request.data.get('skills')
+        index = request.data.get('index')
+
+        if not all([username, title, description, skills, index]):
+            return Response({"success": False, "message": "All fields are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({"success": False, "message": "Invalid user."}, status=status.HTTP_400_BAD_REQUEST)
+
+        bookmark, created = Bookmark.objects.get_or_create(
+            user=user, title=title, description=description, skills=skills, index=index
+        )
+        
+        if created:
+            return Response({
+                "success": True,
+                "message": "Project bookmarked successfully.",
+                "data": BookmarkSerializer(bookmark).data
+            }, status=status.HTTP_201_CREATED)
+
+        return Response({"success": False, "message": "Project already bookmarked."}, status=status.HTTP_200_OK)
+
+    
+    def delete(self, request):
+        username = request.data.get('username')
+        index = request.data.get('index')
+
+        if not all([username, index]):
+            return Response({"success": False, "message": "Username and index are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(username=username)
+            bookmark = Bookmark.objects.get(user=user, index=index)
+            bookmark.delete()
+            return Response({"success": True, "message": "Bookmark deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        except (User.DoesNotExist, Bookmark.DoesNotExist):
+            return Response({"success": False, "message": "Bookmark not found."}, status=status.HTTP_404_NOT_FOUND)
