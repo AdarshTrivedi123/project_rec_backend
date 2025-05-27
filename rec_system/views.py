@@ -8,12 +8,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from .serializers import RegisterSerializer, UserProfileDataSerializer,BookmarkSerializer
 from .models import UserProfileData, Bookmark
-from django.http import HttpResponse, JsonResponse
-from django.template.loader import render_to_string
-from xhtml2pdf import pisa
-import json
-from io import BytesIO
-import io
+from django.http import HttpResponse
+
+
 
 # Create your views here.
 class RegisterAPIView(APIView):
