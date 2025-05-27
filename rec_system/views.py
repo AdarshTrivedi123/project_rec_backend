@@ -218,26 +218,3 @@ class BookmarkAPIView(APIView):
         except (User.DoesNotExist, Bookmark.DoesNotExist):
             return Response({"success": False, "message": "Bookmark not found."}, status=status.HTTP_404_NOT_FOUND)
         
-class GenerateResumePDF(APIView):
-    def post(self, request):
-        if request.method == 'POST':
-            try:
-                data = json.loads(request.body)
-            except json.JSONDecodeError:
-                return JsonResponse({'error': 'Invalid JSON'}, status=400)
-
-            # Render HTML with the provided data
-            html = render_to_string("resume_templates.html", data)
-
-            # Generate PDF from HTML
-            result = BytesIO()
-            pdf = pisa.CreatePDF(src=html, dest=result)
-            
-            if pdf.err:
-                return JsonResponse({'error': 'Error generating PDF'}, status=500)
-
-            response = HttpResponse(result.getvalue(), content_type='application/pdf')
-            response['Content-Disposition'] = 'attachment; filename="resume.pdf"'
-            return response
-
-        return JsonResponse({'error': 'POST method required'}, status=405)
